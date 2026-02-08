@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Accolink - Kasane & Chobe Guesthouses</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #1a5a3a;
+      --primary-dark: #0f3d27;
+      --accent: #8b6f47;
+      --bg: #f5f3f0;
+      --text: #1a1a1a;
+      --text-light: #6b6b6b;
+      --border: #e0e0e0;
+      --white: #ffffff;
+      --whatsapp: #25d366;
+      --whatsapp-dark: #20ba5a;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    button {
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    /* Header */
+    header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: var(--white);
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    .nav a {
+      color: var(--white);
+      font-weight: 500;
+      transition: opacity 0.3s;
+    }
+
+    .nav a:hover {
+      opacity: 0.8;
+    }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: var(--white);
+      padding: 60px 20px;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: clamp(28px, 8vw, 48px);
+      margin-bottom: 12px;
+    }
+
+    .hero p {
+      font-size: clamp(16px, 4vw, 20px);
+      opacity: 0.9;
+    }
+
+    /* Container */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Main Section */
+    main {
+      min-height: calc(100vh - 200px);
+      padding: 40px 20px;
+    }
+
+    .section-title {
+      font-size: 28px;
+      color: var(--primary);
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    /* Grid Layout - 2 columns max, 10 rows */
+    .guesthouses-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 24px;
+      margin-bottom: 40px;
+    }
+
+    @media (min-width: 769px) {
+      .guesthouses-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .guesthouses-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Card */
+    .card {
+      background: var(--white);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      transition: all 0.3s ease;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .card:hover {
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+      transform: translateY(-8px);
+    }
+
+    .card-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      transition: transform 0.3s;
+    }
+
+    .card:hover .card-image {
+      transform: scale(1.05);
+    }
+
+    .card-content {
+      padding: 16px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 6px;
+    }
+
+    .card-location {
+      font-size: 14px;
+      color: var(--text-light);
+      margin-bottom: 10px;
+    }
+
+    .card-price {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    .amenities {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .amenity-tag {
+      font-size: 12px;
+      background: var(--primary);
+      color: var(--white);
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
+
+    .card-button {
+      margin-top: auto;
+      padding: 10px;
+      background: var(--primary);
+      color: var(--white);
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .card-button:hover {
+      background: var(--primary-dark);
+    }
+
+    /* View More Button */
+    .load-more-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 40px;
+    }
+
+    .load-more-btn {
+      padding: 14px 40px;
+      background-color: var(--primary);
+      color: var(--white);
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .load-more-btn:hover:not(:disabled) {
+      background-color: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(26, 90, 58, 0.3);
+    }
+
+    .load-more-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* Detail View */
+    .detail-view {
+      display: none;
+      background: var(--white);
+      border-radius: 10px;
+      padding: 30px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .detail-view.active {
+      display: block;
+    }
+
+    .back-btn {
+      padding: 10px 20px;
+      background: var(--primary);
+      color: var(--white);
+      border: none;
+      border-radius: 6px;
+      margin-bottom: 30px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .back-btn:hover {
+      background: var(--primary-dark);
+    }
+
+    .detail-image {
+      width: 100%;
+      height: 400px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 30px;
+    }
+
+    .detail-title {
+      font-size: 32px;
+      color: var(--primary);
+      margin-bottom: 12px;
+    }
+
+    .detail-location {
+      font-size: 18px;
+      color: var(--text-light);
+      margin-bottom: 20px;
+    }
+
+    .detail-description {
+      font-size: 16px;
+      color: var(--text-light);
+      line-height: 1.8;
+      margin-bottom: 30px;
+    }
+
+    .detail-subtitle {
+      font-size: 20px;
+      color: var(--primary);
+      margin: 30px 0 16px 0;
+    }
+
+    /* Carousel */
+    .carousel {
+      margin-bottom: 30px;
+    }
+
+    .carousel-main {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+
+    .carousel-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .carousel-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0, 0, 0, 0.5);
+      color: var(--white);
+      border: none;
+      font-size: 24px;
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      transition: all 0.3s;
+      z-index: 10;
+      cursor: pointer;
+    }
+
+    .carousel-btn:hover {
+      background: rgba(0, 0, 0, 0.8);
+    }
+
+    .carousel-btn-prev {
+      left: 12px;
+    }
+
+    .carousel-btn-next {
+      right: 12px;
+    }
+
+    .carousel-thumbnails {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 8px 0;
+    }
+
+    .thumbnail {
+      flex-shrink: 0;
+      width: 60px;
+      height: 60px;
+      border: 2px solid transparent;
+      border-radius: 6px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.3s;
+      background: var(--border);
+    }
+
+    .thumbnail img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .thumbnail.active {
+      border-color: var(--primary);
+      box-shadow: 0 0 8px rgba(26, 90, 58, 0.4);
+    }
+
+    /* Amenities Grid */
+    .amenities-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      margin-bottom: 30px;
+    }
+
+    .amenity-badge {
+      padding: 10px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--primary);
+    }
+
+    /* Rooms Grid */
+    .rooms-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 30px;
+    }
+
+    .room-card {
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--bg);
+    }
+
+    .room-card h4 {
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+
+    .room-price {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-top: 8px;
+    }
+
+    /* Contact Section - UPDATED */
+    .contact-section {
+      margin-top: 40px;
+      padding: 30px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      border-radius: 8px;
+      color: var(--white);
+    }
+
+    .contact-section h3 {
+      color: var(--white);
+      margin-bottom: 12px;
+      font-size: 22px;
+    }
+
+    .contact-section p {
+      margin-bottom: 24px;
+      opacity: 0.9;
+      font-size: 16px;
+    }
+
+    .contact-buttons {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .contact-btn {
+      padding: 14px 28px;
+      border: none;
+      border-radius: 6px;
+      color: var(--white);
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 16px;
+      font-family: inherit;
+      flex: 1;
+      min-width: 150px;
+      justify-content: center;
+    }
+
+    /* Book Now Button - WhatsApp */
+    .contact-btn-whatsapp {
+      background: var(--whatsapp);
+      box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+    }
+
+    .contact-btn-whatsapp:hover {
+      background: var(--whatsapp-dark);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
+    }
+
+    .contact-btn-whatsapp:active {
+      transform: translateY(-1px);
+    }
+
+    /* Call Button */
+    .contact-btn-phone {
+      background: var(--accent);
+      box-shadow: 0 4px 15px rgba(139, 111, 71, 0.3);
+    }
+
+    .contact-btn-phone:hover {
+      background: #a68562;
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(139, 111, 71, 0.4);
+    }
+
+    .contact-btn-phone:active {
+      transform: translateY(-1px);
+    }
+
+    /* Loading */
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-light);
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      border: 4px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Footer */
+    footer {
+      background: var(--primary);
+      color: var(--white);
+      text-align: center;
+      padding: 24px;
+      margin-top: 40px;
+    }
+
+    .no-results {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-light);
+      font-size: 18px;
+    }
+
+    /* Mobile */
+    @media (max-width: 480px) {
+      .card-hover-overlay {
+        opacity: 1;
+      }
+
+      .detail-image {
+        height: 250px;
+      }
+
+      .detail-title {
+        font-size: 24px;
+      }
+
+      .contact-btn {
+        width: 100%;
+        flex: none;
+      }
+
+      .contact-buttons {
+        flex-direction: column;
+      }
+
+      .contact-section {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="header-content">
+      <div class="logo">🏡 Accolink</div>
+      <nav class="nav">
+        <a href="#" onclick="showHome(); return false;">Home</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <div class="hero">
+    <h1>Discover Local Guesthouses</h1>
+    <p>Authentic accommodations in Kasane & Chobe, Botswana</p>
+  </div>
+
+  <!-- Main Content -->
+  <main class="container">
+    <!-- List View -->
+    <div id="listView" class="list-view active">
+      <h2 class="section-title">Featured Guesthouses</h2>
+      <div id="guesthouses" class="guesthouses-grid"></div>
+      <div class="load-more-container" id="loadMoreContainer" style="display: none;">
+        <button class="load-more-btn" id="loadMoreBtn" onclick="loadMore()">View More</button>
+      </div>
+    </div>
+
+    <!-- Detail View -->
+    <div id="detailView" class="detail-view"></div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2026 Accolink. Discover local guesthouses in Kasane & Chobe.</p>
+  </footer>
+
+  <script>
+    // Supabase Config
+    const SUPABASE_URL = 'https://YOUR_SUPABASE_URL.supabase.co';
+    const SUPABASE_KEY = 'YOUR_ANON_KEY';
+
+    let currentPage = 1;
+    const itemsPerPage = 20;
+    let allGuesthouses = [];
+    let displayedCount = 0;
+
+    // Initialize
+    async function init() {
+      await loadGuesthouses();
+    }
+
+    // Fetch guesthouses from Supabase
+    async function loadGuesthouses() {
+      try {
+        const start = (currentPage - 1) * itemsPerPage;
+        const end = start + itemsPerPage - 1;
+
+        const response = await fetch(
+          `${SUPABASE_URL}/rest/v1/guesthouses?order=created_at.desc&limit=${itemsPerPage}&offset=${start}`,
+          {
+            headers: {
+              'apikey': SUPABASE_KEY,
+              'Authorization': `Bearer ${SUPABASE_KEY}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+
+        if (!response.ok) throw new Error('Failed to fetch guesthouses');
+        
+        const data = await response.json();
+        
+        if (currentPage === 1) {
+          allGuesthouses = data;
+        } else {
+          allGuesthouses = [...allGuesthouses, ...data];
+        }
+
+        displayedCount = allGuesthouses.length;
+        renderGuesthouses(allGuesthouses);
+
+        // Show "View More" button if there are more items
+        if (data.length === itemsPerPage) {
+          document.getElementById('loadMoreContainer').style.display = 'flex';
+        } else {
+          document.getElementById('loadMoreContainer').style.display = 'none';
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('guesthouses').innerHTML = 
+          '<div class="no-results">Failed to load guesthouses. Please try again later.</div>';
+      }
+    }
+
+    // Render guesthouses in grid
+    function renderGuesthouses(guesthouses) {
+      const container = document.getElementById('guesthouses');
+      container.innerHTML = guesthouses.map(gh => `
+        <div class="card">
+          <img src="${gh.main_image || 'https://via.placeholder.com/400x300?text=No+Image'}" 
+               alt="${gh.name}" class="card-image" onerror="this.src='https://via.placeholder.com/400x300?text=Image+Error'">
+          <div class="card-content">
+            <h3 class="card-title">${gh.name}</h3>
+            <p class="card-location">📍 ${gh.location}</p>
+            <p class="card-price">P${gh.min_price} - P${gh.max_price}</p>
+            <div class="amenities">
+              ${(gh.amenities || []).slice(0, 3).map(a => 
+                `<span class="amenity-tag">${a}</span>`
+              ).join('')}
+              ${(gh.amenities || []).length > 3 ? `<span class="amenity-tag">+${(gh.amenities || []).length - 3}</span>` : ''}
+            </div>
+            <button class="card-button" onclick="showDetail(${gh.id})">View Details →</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Load more guesthouses
+    function loadMore() {
+      currentPage++;
+      loadGuesthouses();
+    }
+
+    // Show detail page
+    async function showDetail(id) {
+      const gh = allGuesthouses.find(g => g.id === id);
+      if (!gh) return;
+
+      // Fetch rooms and images
+      const [roomsRes, imagesRes] = await Promise.all([
+        fetch(`${SUPABASE_URL}/rest/v1/rooms?guesthouse_id=eq.${id}`, {
+          headers: {
+            'apikey': SUPABASE_KEY,
+            'Authorization': `Bearer ${SUPABASE_KEY}`,
+          },
+        }),
+        fetch(`${SUPABASE_URL}/rest/v1/images?guesthouse_id=eq.${id}&order=display_order.asc`, {
+          headers: {
+            'apikey': SUPABASE_KEY,
+            'Authorization': `Bearer ${SUPABASE_KEY}`,
+          },
+        }),
+      ]);
+
+      const rooms = await roomsRes.json();
+      const images = await imagesRes.json();
+
+      const detailView = document.getElementById('detailView');
+      
+      let carouselHTML = '';
+      if (images.length > 0) {
+        carouselHTML = `
+          <div class="carousel">
+            <div class="carousel-main">
+              <img id="mainImage" src="${images[0].image_url}" alt="${gh.name}" class="carousel-image">
+              ${images.length > 1 ? `
+                <button class="carousel-btn carousel-btn-prev" onclick="prevImage()">❮</button>
+                <button class="carousel-btn carousel-btn-next" onclick="nextImage()">❯</button>
+              ` : ''}
+            </div>
+            ${images.length > 1 ? `
+              <div class="carousel-thumbnails">
+                ${images.map((img, idx) => `
+                  <button class="thumbnail ${idx === 0 ? 'active' : ''}" onclick="goToImage(${idx})">
+                    <img src="${img.image_url}" alt="Thumbnail">
+                  </button>
+                `).join('')}
+              </div>
+            ` : ''}
+          </div>
+        `;
+        window.currentImageIndex = 0;
+        window.images = images;
+      } else {
+        carouselHTML = `<div style="width: 100%; aspect-ratio: 16/9; background: var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--text-light);">No images available</div>`;
+      }
+
+      detailView.innerHTML = `
+        <button class="back-btn" onclick="showHome()">← Back to List</button>
+        
+        ${carouselHTML}
+
+        <h2 class="detail-title">${gh.name}</h2>
+        <p class="detail-location">📍 ${gh.location}</p>
+        <p class="detail-description">${gh.description}</p>
+
+        ${gh.amenities && gh.amenities.length > 0 ? `
+          <h3 class="detail-subtitle">Amenities</h3>
+          <div class="amenities-grid">
+            ${gh.amenities.map(a => `<div class="amenity-badge">✓ ${a}</div>`).join('')}
+          </div>
+        ` : ''}
+
+        ${rooms.length > 0 ? `
+          <h3 class="detail-subtitle">Room Types & Prices</h3>
+          <div class="rooms-grid">
+            ${rooms.map(room => `
+              <div class="room-card">
+                <h4>${room.room_type}</h4>
+                <p>Capacity: ${room.capacity} person${room.capacity !== 1 ? 's' : ''}</p>
+                <p class="room-price">P${room.price}/night</p>
+              </div>
+            `).join('')}
+          </div>
+        ` : ''}
+
+        <div class="contact-section">
+          <h3>🎯 Ready to Book?</h3>
+          <p>Contact us directly to reserve your stay. We're here to help make your visit unforgettable!</p>
+          <div class="contact-buttons">
+            ${gh.whatsapp ? `
+              <a href="https://wa.me/${gh.whatsapp.replace(/\\D/g, '')}?text=Hi! I'm interested in booking a room at ${gh.name}. Could you please provide more details and availability?" 
+                 target="_blank" class="contact-btn contact-btn-whatsapp">
+                <span>💬</span>
+                <span>Book Now on WhatsApp</span>
+              </a>
+            ` : ''}
+            ${gh.phone ? `
+              <a href="tel:${gh.phone}" class="contact-btn contact-btn-phone">
+                <span>☎️</span>
+                <span>Call to Book</span>
+              </a>
+            ` : ''}
+          </div>
+        </div>
+      `;
+
+      document.getElementById('listView').classList.remove('active');
+      detailView.classList.add('active');
+      window.scrollTo(0, 0);
+    }
+
+    // Image carousel functions
+    function nextImage() {
+      if (!window.images) return;
+      window.currentImageIndex = (window.currentImageIndex + 1) % window.images.length;
+      updateCarousel();
+    }
+
+    function prevImage() {
+      if (!window.images) return;
+      window.currentImageIndex = (window.currentImageIndex - 1 + window.images.length) % window.images.length;
+      updateCarousel();
+    }
+
+    function goToImage(index) {
+      window.currentImageIndex = index;
+      updateCarousel();
+    }
+
+    function updateCarousel() {
+      if (!window.images) return;
+      const img = window.images[window.currentImageIndex];
+      document.getElementById('mainImage').src = img.image_url;
+      
+      document.querySelectorAll('.thumbnail').forEach((thumb, idx) => {
+        thumb.classList.toggle('active', idx === window.currentImageIndex);
+      });
+    }
+
+    // Show home
+    function showHome() {
+      document.getElementById('listView').classList.add('active');
+      document.getElementById('detailView').classList.remove('active');
+      window.scrollTo(0, 0);
+    }
+
+    // Start app
+    init();
+  </script>
+</body>
+</html>
