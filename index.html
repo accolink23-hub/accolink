@@ -113,7 +113,7 @@
       text-align: center;
     }
 
-    /* Grid Layout - 2 columns max, 10 rows */
+    /* Grid Layout */
     .guesthouses-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -437,7 +437,7 @@
       margin-top: 8px;
     }
 
-    /* Contact Section - UPDATED */
+    /* Contact Section */
     .contact-section {
       margin-top: 40px;
       padding: 30px;
@@ -483,7 +483,6 @@
       justify-content: center;
     }
 
-    /* Book Now Button - WhatsApp */
     .contact-btn-whatsapp {
       background: var(--whatsapp);
       box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
@@ -495,11 +494,6 @@
       box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
     }
 
-    .contact-btn-whatsapp:active {
-      transform: translateY(-1px);
-    }
-
-    /* Call Button */
     .contact-btn-phone {
       background: var(--accent);
       box-shadow: 0 4px 15px rgba(139, 111, 71, 0.3);
@@ -509,10 +503,6 @@
       background: #a68562;
       transform: translateY(-3px);
       box-shadow: 0 6px 20px rgba(139, 111, 71, 0.4);
-    }
-
-    .contact-btn-phone:active {
-      transform: translateY(-1px);
     }
 
     /* Loading */
@@ -554,10 +544,6 @@
 
     /* Mobile */
     @media (max-width: 480px) {
-      .card-hover-overlay {
-        opacity: 1;
-      }
-
       .detail-image {
         height: 250px;
       }
@@ -620,21 +606,20 @@
   </footer>
 
   <script>
-    // Supabase Config
+    // Supabase Config - ONLY UPDATE THESE TWO LINES
     const SUPABASE_URL = 'https://YOUR_SUPABASE_URL.supabase.co';
     const SUPABASE_KEY = 'YOUR_ANON_KEY';
 
     let currentPage = 1;
     const itemsPerPage = 20;
     let allGuesthouses = [];
-    let displayedCount = 0;
 
     // Initialize
     async function init() {
       await loadGuesthouses();
     }
 
-    // Fetch guesthouses from Supabase
+    // Fetch guesthouses from Supabase (ONE TABLE)
     async function loadGuesthouses() {
       try {
         const start = (currentPage - 1) * itemsPerPage;
@@ -661,7 +646,6 @@
           allGuesthouses = [...allGuesthouses, ...data];
         }
 
-        displayedCount = allGuesthouses.length;
         renderGuesthouses(allGuesthouses);
 
         // Show "View More" button if there are more items
@@ -680,24 +664,27 @@
     // Render guesthouses in grid
     function renderGuesthouses(guesthouses) {
       const container = document.getElementById('guesthouses');
-      container.innerHTML = guesthouses.map(gh => `
-        <div class="card">
-          <img src="${gh.main_image || 'https://via.placeholder.com/400x300?text=No+Image'}" 
-               alt="${gh.name}" class="card-image" onerror="this.src='https://via.placeholder.com/400x300?text=Image+Error'">
-          <div class="card-content">
-            <h3 class="card-title">${gh.name}</h3>
-            <p class="card-location">📍 ${gh.location}</p>
-            <p class="card-price">P${gh.min_price} - P${gh.max_price}</p>
-            <div class="amenities">
-              ${(gh.amenities || []).slice(0, 3).map(a => 
-                `<span class="amenity-tag">${a}</span>`
-              ).join('')}
-              ${(gh.amenities || []).length > 3 ? `<span class="amenity-tag">+${(gh.amenities || []).length - 3}</span>` : ''}
+      container.innerHTML = guesthouses.map(gh => {
+        const mainImage = gh.images && gh.images.length > 0 ? gh.images[0] : 'https://via.placeholder.com/400x300?text=No+Image';
+        return `
+          <div class="card">
+            <img src="${mainImage}" 
+                 alt="${gh.name}" class="card-image" onerror="this.src='https://via.placeholder.com/400x300?text=Image+Error'">
+            <div class="card-content">
+              <h3 class="card-title">${gh.name}</h3>
+              <p class="card-location">📍 ${gh.location}</p>
+              <p class="card-price">P${gh.min_price} - P${gh.max_price}</p>
+              <div class="amenities">
+                ${(gh.amenities || []).slice(0, 3).map(a => 
+                  `<span class="amenity-tag">${a}</span>`
+                ).join('')}
+                ${(gh.amenities || []).length > 3 ? `<span class="amenity-tag">+${(gh.amenities || []).length - 3}</span>` : ''}
+              </div>
+              <button class="card-button" onclick="showDetail(${gh.id})">View Details →</button>
             </div>
-            <button class="card-button" onclick="showDetail(${gh.id})">View Details →</button>
           </div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
 
     // Load more guesthouses
@@ -707,28 +694,12 @@
     }
 
     // Show detail page
-    async function showDetail(id) {
+    function showDetail(id) {
       const gh = allGuesthouses.find(g => g.id === id);
       if (!gh) return;
 
-      // Fetch rooms and images
-      const [roomsRes, imagesRes] = await Promise.all([
-        fetch(`${SUPABASE_URL}/rest/v1/rooms?guesthouse_id=eq.${id}`, {
-          headers: {
-            'apikey': SUPABASE_KEY,
-            'Authorization': `Bearer ${SUPABASE_KEY}`,
-          },
-        }),
-        fetch(`${SUPABASE_URL}/rest/v1/images?guesthouse_id=eq.${id}&order=display_order.asc`, {
-          headers: {
-            'apikey': SUPABASE_KEY,
-            'Authorization': `Bearer ${SUPABASE_KEY}`,
-          },
-        }),
-      ]);
-
-      const rooms = await roomsRes.json();
-      const images = await imagesRes.json();
+      const images = gh.images || [];
+      const roomTypes = gh.room_types || [];
 
       const detailView = document.getElementById('detailView');
       
@@ -737,7 +708,7 @@
         carouselHTML = `
           <div class="carousel">
             <div class="carousel-main">
-              <img id="mainImage" src="${images[0].image_url}" alt="${gh.name}" class="carousel-image">
+              <img id="mainImage" src="${images[0]}" alt="${gh.name}" class="carousel-image">
               ${images.length > 1 ? `
                 <button class="carousel-btn carousel-btn-prev" onclick="prevImage()">❮</button>
                 <button class="carousel-btn carousel-btn-next" onclick="nextImage()">❯</button>
@@ -747,7 +718,7 @@
               <div class="carousel-thumbnails">
                 ${images.map((img, idx) => `
                   <button class="thumbnail ${idx === 0 ? 'active' : ''}" onclick="goToImage(${idx})">
-                    <img src="${img.image_url}" alt="Thumbnail">
+                    <img src="${img}" alt="Thumbnail">
                   </button>
                 `).join('')}
               </div>
@@ -776,10 +747,10 @@
           </div>
         ` : ''}
 
-        ${rooms.length > 0 ? `
+        ${roomTypes.length > 0 ? `
           <h3 class="detail-subtitle">Room Types & Prices</h3>
           <div class="rooms-grid">
-            ${rooms.map(room => `
+            ${roomTypes.map(room => `
               <div class="room-card">
                 <h4>${room.room_type}</h4>
                 <p>Capacity: ${room.capacity} person${room.capacity !== 1 ? 's' : ''}</p>
@@ -836,7 +807,7 @@
     function updateCarousel() {
       if (!window.images) return;
       const img = window.images[window.currentImageIndex];
-      document.getElementById('mainImage').src = img.image_url;
+      document.getElementById('mainImage').src = img;
       
       document.querySelectorAll('.thumbnail').forEach((thumb, idx) => {
         thumb.classList.toggle('active', idx === window.currentImageIndex);
@@ -854,4 +825,4 @@
     init();
   </script>
 </body>
-</html>
+  </html>
