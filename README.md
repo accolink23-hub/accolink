@@ -1,2 +1,0 @@
-# accolink
-Chobe stay inns
