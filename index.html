@@ -694,7 +694,17 @@
   </style>
 </head>
 <body>
+<div id="callModal" class="modal" style="display:none;">
+  <div class="modal-content">
+    <h3>Call Guesthouse</h3>
 
+    <input id="firstName" type="text" placeholder="First Name" required>
+    <input id="lastName" type="text" placeholder="Last Name" required>
+    <input id="phoneNumber" type="tel" placeholder="Your Phone Number" required>
+
+    <button onclick="submitCall()">Continue to Call</button>
+  </div>
+</div>
   <div id="leadModal">
     <div class="modal-box">
       <h3>Contact Guest House</h3>
@@ -957,7 +967,39 @@
       currentOwnerPhone = phone;
       document.getElementById('leadModal').style.display = 'flex';
     }
+let guesthouseName = "";
+let guesthouseNumber = "";
 
+function openCallForm(name, number){
+  guesthouseName = name;
+  guesthouseNumber = number;
+  document.getElementById("callModal").style.display = "block";
+}
+
+async function submitCall(){
+
+  const firstName = document.getElementById("firstName").value;
+  const lastName = document.getElementById("lastName").value;
+  const phone = document.getElementById("phoneNumber").value;
+
+  const { data, error } = await supabase
+    .from("leads")
+    .insert([
+      {
+        first_name: firstName,
+        last_name: lastName,
+        phone_number: phone,
+        guesthouse: guesthouseName,
+        method: "call"
+      }
+    ]);
+
+  if(!error){
+    window.location.href = "tel:" + guesthouseNumber;
+  }else{
+    alert("Error saving data");
+  }
+}
     function closeLeadModal() {
       document.getElementById('leadModal').style.display = 'none';
     }
