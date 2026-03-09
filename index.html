@@ -1,365 +1,1060 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Accolink - Find nearby stays in Botswana</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Accolink - Find nearby stays in Botswana</title>
+  <link rel="icon" type="image/png" href="https://bqaebgtvwxpdaqwdytss.supabase.co/storage/v1/object/public/company%20logo/accolink%20logo.png">
 
-<link rel="icon" type="image/png" href="https://bqaebgtvwxpdaqwdytss.supabase.co/storage/v1/object/public/company%20logo/accolink%20logo.png">
 <link rel="apple-touch-icon" href="https://bqaebgtvwxpdaqwdytss.supabase.co/storage/v1/object/public/company%20logo/accolink%20logo.png">
-<link rel="manifest" href="manifest.json">
 
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#1a5a3a">
+<link rel="icon" type="image/png" sizes="32x32" href="https://bqaebgtvwxpdaqwdytss.supabase.co/storage/v1/object/public/company%20logo/accolink%20logo.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="apple-touch-icon" href="logo.png">
+  <meta name="theme-color" content="#1a5a3a">
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<style>
-
-:root{
---primary:#1a5a3a;
---primary-dark:#0f3d27;
---accent:#1a5a3a; /* replaced brown with emerald */
---bg:#f5f3f0;
---text:#1a1a1a;
---text-light:#666;
---border:#ddd;
---white:#ffffff;
---success:#25d366;
-}
-
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-}
-
-body{
-font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
-background:var(--bg);
-color:var(--text);
-}
-
-button{cursor:pointer;border:none}
-
-/* modal */
-
-#leadModal{
-display:none;
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:rgba(0,0,0,0.8);
-z-index:9999;
-align-items:center;
-justify-content:center;
-padding:20px;
-}
-
-.modal-box{
-background:white;
-padding:30px;
-border-radius:12px;
-width:100%;
-max-width:400px;
-text-align:center;
-}
-
-.modal-box input{
-width:100%;
-padding:12px;
-margin:10px 0;
-border:1px solid var(--border);
-border-radius:6px;
-}
-
-.btn-submit{
-background:var(--primary);
-color:white;
-padding:14px;
-width:100%;
-border-radius:6px;
-font-weight:700;
-}
-
-/* cards */
-
-.guesthouses-grid{
-display:grid;
-grid-template-columns:1fr;
-gap:30px;
-}
-
-@media(min-width:768px){
-.guesthouses-grid{
-grid-template-columns:repeat(2,1fr);
-}
-}
-
-.card{
-background:white;
-border-radius:12px;
-overflow:hidden;
-box-shadow:0 2px 12px rgba(0,0,0,0.08);
-display:flex;
-flex-direction:column;
-}
-
-.card-image{
-width:100%;
-height:220px;
-object-fit:cover;
-}
-
-.card-content{
-padding:20px;
-display:flex;
-flex-direction:column;
-}
-
-.card-title{
-font-size:18px;
-font-weight:700;
-color:var(--primary);
-}
-
-.card-price{
-font-weight:700;
-color:var(--accent);
-margin:10px 0;
-}
-
-.card-button{
-background:var(--accent);
-color:white;
-padding:12px;
-border-radius:6px;
-font-weight:700;
-margin-top:auto;
-}
-
-.card-button:hover{
-background:#0f3d27; /* emerald hover */
-}
-
-/* contact */
-
-.contact-section{
-margin-top:32px;
-padding:24px;
-background:var(--primary);
-border-radius:10px;
-color:white;
-}
-
-.contact-buttons{
-display:flex;
-gap:12px;
-flex-wrap:wrap;
-}
-
-.contact-btn{
-padding:12px 20px;
-font-weight:700;
-border-radius:6px;
-color:white;
-flex:1;
-}
-
-.contact-btn-whatsapp{
-background:var(--success);
-}
-
-.contact-btn-phone{
-background:var(--accent);
-}
-
-</style>
-</head>
-
-<body>
-
-<div id="leadModal">
-<div class="modal-box">
-<h3>Contact Guest House</h3>
-<p>Enter your details to continue</p>
-<input id="guestName" placeholder="Your Name">
-<input id="guestPhone" placeholder="Your Phone Number">
-<button class="btn-submit" onclick="submitLead()">Continue</button>
-<p onclick="closeLeadModal()" style="margin-top:10px;font-size:12px;color:#999;cursor:pointer">Cancel</p>
-</div>
-</div>
-
-<main style="padding:40px">
-
-<h2>Featured Guesthouses</h2>
-<div id="guesthouses" class="guesthouses-grid"></div>
-
-</main>
-
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-ZH2GH4D8JM"></script>
 <script>
-
-const SUPABASE_URL='https://bqaebgtvwxpdaqwdytss.supabase.co'
-const SUPABASE_KEY='YOUR_PUBLIC_KEY'
-
-const _supabase=supabase.createClient(SUPABASE_URL,SUPABASE_KEY)
-
-let allGuesthouses=[]
-let currentHouse=""
-let currentOwnerPhone=""
-let bookingAction=""
-
-async function loadGuesthouses(){
-
-const res=await fetch(`${SUPABASE_URL}/rest/v1/guesthouses?select=*`,{
-headers:{
-apikey:SUPABASE_KEY,
-Authorization:`Bearer ${SUPABASE_KEY}`
-}
-})
-
-allGuesthouses=await res.json()
-
-renderGuesthouses(allGuesthouses)
-
-}
-
-function renderGuesthouses(data){
-
-const container=document.getElementById("guesthouses")
-
-container.innerHTML=data.map(g=>{
-
-const img=g.images?.[0]||"https://via.placeholder.com/400"
-
-return`
-
-<div class="card">
-
-<img src="${img}" class="card-image">
-
-<div class="card-content">
-
-<h3 class="card-title">${g.name}</h3>
-
-<p>${g.location}</p>
-
-<p class="card-price">P${g.min_price}/night</p>
-
-<button class="card-button" onclick="showDetail(${g.id})">Explore</button>
-
-</div>
-
-</div>
-
-`
-
-}).join("")
-
-}
-
-function showDetail(id){
-
-const gh=allGuesthouses.find(g=>g.id===id)
-
-document.body.insertAdjacentHTML("beforeend",`
-
-<div id="detailPopup" style="position:fixed;top:0;left:0;width:100%;height:100%;background:black">
-
-<div style="background:white;margin:50px auto;padding:30px;max-width:600px">
-
-<h2>${gh.name}</h2>
-
-<p>${gh.location}</p>
-
-<div class="contact-buttons">
-
-<button class="contact-btn contact-btn-whatsapp"
-onclick="triggerWhatsApp('${gh.name}','${gh.whatsapp?.replace(/\D/g,'')}')">
-WhatsApp
-</button>
-
-<button class="contact-btn contact-btn-phone"
-onclick="triggerCall('${gh.name}','${gh.phone?.replace(/\D/g,'')}',${gh.id})">
-Call
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-`)
-
-}
-
-function triggerWhatsApp(name,phone){
-
-currentHouse=name
-currentOwnerPhone=phone
-bookingAction="whatsapp"
-
-document.getElementById("leadModal").style.display="flex"
-
-}
-
-function triggerCall(name,phone,id){
-
-currentHouse=name
-currentOwnerPhone=phone
-bookingAction="call"
-window.callGuesthouseId=id
-
-document.getElementById("leadModal").style.display="flex"
-
-}
-
-function closeLeadModal(){
-
-document.getElementById("leadModal").style.display="none"
-
-}
-
-async function submitLead(){
-
-const name=document.getElementById("guestName").value
-const phone=document.getElementById("guestPhone").value
-
-if(!name||!phone){
-alert("Enter your details")
-return
-}
-
-await _supabase
-.from("leads")
-.insert([{
-guest_name:name,
-guest_phone:phone,
-house_name:currentHouse
-}])
-
-closeLeadModal()
-
-if(bookingAction==="call"){
-
-window.location.href=`tel:${currentOwnerPhone}`
-
-}else{
-
-const message="Hello i saw you guest house on Accolink i would like to book a room please"
-
-window.open(`https://wa.me/${currentOwnerPhone}?text=${encodeURIComponent(message)}`)
-
-}
-
-}
-
-loadGuesthouses()
-
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-ZH2GH4D8JM');
 </script>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #1a5a3a;
+      --primary-dark: #0f3d27;
+      --accent: #8b6f47;
+      --bg: #f5f3f0;
+      --text: #1a1a1a;
+      --text-light: #666;
+      --border: #ddd;
+      --white: #ffffff;
+      --success: #25d366;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    a { text-decoration: none; color: inherit; }
+    button { cursor: pointer; font-family: inherit; border: none; }
+
+    /* Lead Modal Styling */
+    #leadModal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-box {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    .modal-box h3 { color: var(--primary); margin-bottom: 15px; }
+    .modal-box input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+    }
+
+    .btn-submit {
+      background: var(--primary);
+      color: white;
+      width: 100%;
+      padding: 14px;
+      border-radius: 6px;
+      font-weight: 700;
+      margin-top: 10px;
+    }
+
+    /* Header */
+    header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: var(--white);
+      padding: 20px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .header-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .logo {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 5px;
+      letter-spacing: -0.5px;
+    }
+
+    .tagline {
+      font-size: 16px;
+      opacity: 0.9;
+    }
+
+    /* Search Bar */
+    .search-container {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      padding: 30px 20px;
+      text-align: center;
+    }
+
+    .search-box {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 14px 20px;
+      border: none;
+      border-radius: 50px;
+      font-size: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      transition: all 0.3s;
+    }
+
+    .search-box input:focus {
+      outline: none;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+    }
+
+    /* Container */
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    main {
+      min-height: calc(100vh - 200px);
+      padding: 40px 20px;
+    }
+
+    .section-title {
+      font-size: 28px;
+      color: var(--primary);
+      margin-bottom: 30px;
+      text-align: center;
+      font-weight: 700;
+    }
+
+    .guesthouses-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 30px;
+      margin-bottom: 40px;
+    }
+
+    @media (min-width: 768px) {
+      .guesthouses-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    /* Card */
+    .card {
+      background: var(--white);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      transition: all 0.3s ease;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .card:hover {
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      transform: translateY(-4px);
+    }
+
+    .card-image {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      background: var(--border);
+      transition: transform 0.3s;
+    }
+
+    .card:hover .card-image {
+      transform: scale(1.03);
+    }
+
+    .card-content {
+      padding: 20px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+
+    .card-location {
+      font-size: 13px;
+      color: var(--text-light);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .location-pin {
+      font-size: 14px;
+      color: var(--accent);
+    }
+
+    .card-price {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .amenities {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .amenity-tag {
+      font-size: 11px;
+      background: var(--primary);
+      color: var(--white);
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    .card-button {
+      margin-top: auto;
+      padding: 12px;
+      background: var(--accent);
+      color: var(--white);
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+      width: 100%;
+    }
+
+    .card-button:hover {
+      background: #a68562;
+      transform: translateY(-2px);
+    }
+
+    /* Load More */
+    .load-more-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 50px;
+    }
+
+    .load-more-btn {
+      padding: 14px 50px;
+      background: var(--primary);
+      color: var(--white);
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 700;
+      transition: all 0.3s;
+      box-shadow: 0 4px 12px rgba(26,90,58,0.2);
+      cursor: pointer;
+    }
+
+    .load-more-btn:hover:not(:disabled) {
+      background: var(--primary-dark);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 16px rgba(26,90,58,0.3);
+    }
+
+    .load-more-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* Detail Modal */
+    .detail-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 200;
+      overflow-y: auto;
+      padding: 20px;
+    }
+
+    .detail-overlay.active {
+      display: block;
+    }
+
+    .detail-view {
+      background: var(--white);
+      margin: 20px auto;
+      border-radius: 12px;
+      max-width: 900px;
+      animation: slideUp 0.3s ease;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .detail-header {
+      position: sticky;
+      top: 0;
+      background: var(--white);
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+      border-radius: 12px 12px 0 0;
+    }
+
+    .back-btn {
+      padding: 8px 16px;
+      background: var(--primary);
+      color: var(--white);
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .back-btn:hover {
+      background: var(--primary-dark);
+    }
+
+    .detail-close {
+      font-size: 28px;
+      cursor: pointer;
+      color: var(--text-light);
+      transition: color 0.3s;
+      line-height: 1;
+      background: none;
+      border: none;
+      padding: 0;
+    }
+
+    .detail-close:hover {
+      color: var(--text);
+    }
+
+    .detail-content {
+      padding: 24px;
+    }
+
+    /* Carousel */
+    .carousel {
+      margin-bottom: 24px;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .carousel-main {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16/9;
+      background: var(--border);
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+
+    .carousel-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .carousel-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0,0,0,0.6);
+      color: var(--white);
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      transition: all 0.3s;
+      z-index: 10;
+      font-size: 20px;
+      cursor: pointer;
+      border: none;
+    }
+
+    .carousel-btn:hover {
+      background: rgba(0,0,0,0.9);
+    }
+
+    .carousel-btn-prev { left: 12px; }
+    .carousel-btn-next { right: 12px; }
+
+    .carousel-thumbnails {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 8px 0;
+    }
+
+    .thumbnail {
+      flex-shrink: 0;
+      width: 70px;
+      height: 70px;
+      border: 2px solid transparent;
+      border-radius: 6px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.3s;
+      background: var(--border);
+    }
+
+    .thumbnail img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .thumbnail.active {
+      border-color: var(--primary);
+      box-shadow: 0 0 8px rgba(26,90,58,0.4);
+    }
+
+    .detail-title {
+      font-size: 28px;
+      color: var(--primary);
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    .detail-location {
+      font-size: 16px;
+      color: var(--text-light);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .detail-description {
+      font-size: 15px;
+      color: var(--text-light);
+      line-height: 1.8;
+      margin-bottom: 24px;
+    }
+
+    .detail-subtitle {
+      font-size: 18px;
+      color: var(--primary);
+      margin: 24px 0 16px 0;
+      font-weight: 700;
+    }
+
+    .amenities-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .amenity-badge {
+      padding: 12px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--primary);
+      font-size: 14px;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .rooms-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .room-card {
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg);
+      transition: all 0.3s;
+    }
+
+    .room-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 4px 12px rgba(139,111,71,0.1);
+    }
+
+    .room-card h4 {
+      color: var(--primary);
+      margin-bottom: 8px;
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    .room-card p {
+      font-size: 13px;
+      color: var(--text-light);
+      margin-bottom: 4px;
+    }
+
+    .room-price {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* Contact Section */
+    .contact-section {
+      margin-top: 32px;
+      padding: 24px;
+      background: var(--primary);
+      border-radius: 10px;
+      color: var(--white);
+    }
+
+    .contact-section h3 {
+      color: var(--white);
+      margin-bottom: 8px;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .contact-section p {
+      margin-bottom: 20px;
+      opacity: 0.95;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .contact-buttons {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .contact-btn {
+      padding: 12px 20px;
+      color: var(--white);
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 14px;
+      flex: 1;
+      min-width: 140px;
+      border-radius: 6px;
+      border: none;
+    }
+
+    .contact-btn-whatsapp {
+      background: var(--success);
+      box-shadow: 0 4px 12px rgba(37,211,102,0.3);
+    }
+
+    .contact-btn-whatsapp:hover {
+      background: #20ba5a;
+      transform: translateY(-2px);
+    }
+
+    .contact-btn-phone {
+      background: var(--accent);
+      box-shadow: 0 4px 12px rgba(139,111,71,0.3);
+    }
+
+    .contact-btn-phone:hover {
+      background: #a68562;
+      transform: translateY(-2px);
+    }
+
+    .attribution {
+      font-size: 12px;
+      color: rgba(255,255,255,0.8);
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255,255,255,0.2);
+      font-style: italic;
+    }
+
+    footer {
+      background: var(--primary);
+      color: var(--white);
+      text-align: center;
+      padding: 24px;
+      margin-top: 60px;
+      font-size: 14px;
+    }
+
+    .no-results {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-light);
+      font-size: 16px;
+    }
+
+    /* Mobile */
+    @media (max-width: 768px) {
+      .guesthouses-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .carousel-main {
+        aspect-ratio: 4/3;
+      }
+
+      .detail-title {
+        font-size: 22px;
+      }
+
+      .contact-btn {
+        width: 100%;
+        flex: none;
+      }
+
+      .contact-buttons {
+        flex-direction: column;
+      }
+
+      .detail-content {
+        padding: 16px;
+      }
+
+      .logo {
+        font-size: 24px;
+      }
+
+      .tagline {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="leadModal">
+    <div class="modal-box">
+      <h3>Contact Guest House</h3>
+      <p>Enter your details to chat on WhatsApp.</p>
+      <input type="text" id="guestName" placeholder="Your Name" required>
+      <input type="tel" id="guestPhone" placeholder="Your Phone Number" required>
+      <button class="btn-submit" onclick="submitLead()">Continue to Booking</button>
+      <p style="font-size: 11px; color: #999; margin-top: 10px; cursor: pointer;" onclick="closeLeadModal()">Cancel</p>
+    </div>
+  </div>
+
+  <header>
+    <div class="header-content">
+      <div class="logo">Accolink</div>
+      <div class="tagline">Find nearby stays in Botswana</div>
+    </div>
+  </header>
+
+  <div class="search-container">
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Search guesthouse..." onkeyup="filterGuesthouses()">
+    </div>
+  </div>
+
+  <main class="container">
+    <div id="listView" class="list-view active">
+      <h2 class="section-title">Featured Guesthouses</h2>
+      <div id="guesthouses" class="guesthouses-grid"></div>
+      <div class="load-more-container" id="loadMoreContainer" style="display: none;">
+        <button class="load-more-btn" onclick="loadMore()">Load More</button>
+      </div>
+    </div>
+  </main>
+
+  <div id="detailOverlay" class="detail-overlay">
+    <div class="detail-view" id="detailView"></div>
+  </div>
+
+  <footer>
+    <p>Copyright 2026 Accolink. All rights reserved. Premium accommodation booking platform for Kasane & Chobe.</p>
+  </footer>
+
+  <script>
+    const SUPABASE_URL = 'https://bqaebgtvwxpdaqwdytss.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJxYWViZ3R2d3hwZGFxd2R5dHNzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1MjIzNTIsImV4cCI6MjA4NjA5ODM1Mn0.gvhaJqDncopmuSzw3fs91rS87G2--bDtvZeWEEg8mno';
+    
+    // Initialize Supabase Client
+    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    let currentPage = 1;
+    const itemsPerPage = 10;
+    let allGuesthouses = [];
+    let displayedGuesthouses = [];
+    
+    // Variables for Lead Tracking
+    let currentHouse = "";
+    let currentOwnerPhone = "";
+
+    async function init() {
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js');
+      }
+      await loadGuesthouses();
+    }
+
+    async function loadGuesthouses() {
+      try {
+        const start = (currentPage - 1) * itemsPerPage;
+
+        const response = await fetch(
+          `${SUPABASE_URL}/rest/v1/guesthouses?order=created_at.desc&limit=${itemsPerPage}&offset=${start}`,
+          {
+            headers: {
+              'apikey': SUPABASE_KEY,
+              'Authorization': `Bearer ${SUPABASE_KEY}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+
+        if (!response.ok) throw new Error('Failed to fetch');
+        
+        const data = await response.json();
+        
+        if (currentPage === 1) {
+          allGuesthouses = data;
+          displayedGuesthouses = data;
+        } else {
+          allGuesthouses = [...allGuesthouses, ...data];
+          displayedGuesthouses = [...displayedGuesthouses, ...data];
+        }
+
+        renderGuesthouses(displayedGuesthouses);
+
+        document.getElementById('loadMoreContainer').style.display = 
+          data.length === itemsPerPage ? 'flex' : 'none';
+      } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('guesthouses').innerHTML = 
+          '<div class="no-results">Unable to load guesthouses. Please try again.</div>';
+      }
+    }
+
+    function renderGuesthouses(guesthouses) {
+      const container = document.getElementById('guesthouses');
+      
+      if (guesthouses.length === 0) {
+        container.innerHTML = '<div class="no-results">No guesthouses found.</div>';
+        return;
+      }
+
+      container.innerHTML = guesthouses.map(gh => {
+        const mainImage = gh.images && gh.images.length > 0 ? gh.images[0] : 'https://via.placeholder.com/400x300?text=No+Image';
+        const price = gh.min_price || 0;
+        const amenityList = (gh.amenities || []).slice(0, 3).map(a => 
+          `<span class="amenity-tag">${a}</span>`
+        ).join('');
+        const moreAmenities = (gh.amenities || []).length > 3 ? 
+          `<span class="amenity-tag">+${(gh.amenities || []).length - 3}</span>` : '';
+
+        return `
+          <div class="card">
+            <img src="${mainImage}" alt="${gh.name}" class="card-image" 
+                 onerror="this.src='https://via.placeholder.com/400x300?text=Image+Error'">
+            <div class="card-content">
+              <h3 class="card-title">${gh.name || 'Guesthouse'}</h3>
+              <p class="card-location">
+                <span class="location-pin">📍</span>
+                ${gh.location || 'Location not specified'}
+              </p>
+              <p class="card-price">From P${price}/night</p>
+              <div class="amenities">
+                ${amenityList}
+                ${moreAmenities}
+              </div>
+              <button class="card-button" onclick="showDetail(${gh.id})">Explore Guesthouse</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function filterGuesthouses() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      
+      if (searchTerm === '') {
+        displayedGuesthouses = allGuesthouses;
+      } else {
+        displayedGuesthouses = allGuesthouses.filter(gh => 
+          (gh.name && gh.name.toLowerCase().includes(searchTerm)) ||
+          (gh.location && gh.location.toLowerCase().includes(searchTerm))
+        );
+      }
+
+      renderGuesthouses(displayedGuesthouses);
+    }
+
+    function loadMore() {
+      currentPage++;
+      loadGuesthouses();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function showDetail(id) {
+      const gh = allGuesthouses.find(g => g.id === id);
+      if (!gh) return;
+
+      const images = gh.images || [];
+      const roomTypes = gh.room_types || [];
+
+      let carouselHTML = '';
+      if (images.length > 0) {
+        carouselHTML = `
+          <div class="carousel">
+            <div class="carousel-main">
+              <img id="mainImage" src="${images[0]}" alt="${gh.name}" class="carousel-image">
+              ${images.length > 1 ? `
+                <button class="carousel-btn carousel-btn-prev" onclick="prevImage()">❮</button>
+                <button class="carousel-btn carousel-btn-next" onclick="nextImage()">❯</button>
+              ` : ''}
+            </div>
+            ${images.length > 1 ? `
+              <div class="carousel-thumbnails">
+                ${images.map((img, idx) => `
+                  <button class="thumbnail ${idx === 0 ? 'active' : ''}" onclick="goToImage(${idx})">
+                    <img src="${img}" alt="Image">
+                  </button>
+                `).join('')}
+              </div>
+            ` : ''}
+          </div>
+        `;
+        window.currentImageIndex = 0;
+        window.images = images;
+      }
+
+      document.getElementById('detailView').innerHTML = `
+        <div class="detail-header">
+          <button class="back-btn" onclick="showHome()">Back</button>
+          <button class="detail-close" onclick="showHome()">×</button>
+        </div>
+        
+        <div class="detail-content">
+          ${carouselHTML}
+
+          <h2 class="detail-title">${gh.name || 'Guesthouse'}</h2>
+          <p class="detail-location">
+            <span>📍</span>
+            ${gh.location || 'Location not specified'}
+          </p>
+          <p class="detail-description">${gh.description || 'No description available'}</p>
+
+          ${gh.amenities && gh.amenities.length > 0 ? `
+            <h3 class="detail-subtitle">Amenities</h3>
+            <div class="amenities-grid">
+              ${gh.amenities.map(a => `<div class="amenity-badge">${a}</div>`).join('')}
+            </div>
+          ` : ''}
+
+          ${roomTypes && roomTypes.length > 0 ? `
+            <h3 class="detail-subtitle">Room Types</h3>
+            <div class="rooms-grid">
+              ${roomTypes.map(room => `
+                <div class="room-card">
+                  <h4>${room.room_type || 'Room'}</h4>
+                  <p>Capacity: ${room.capacity || 'N/A'} person${room.capacity !== 1 ? 's' : ''}</p>
+                  <p class="room-price">P${room.price || 'TBA'}/night</p>
+                </div>
+              `).join('')}
+            </div>
+          ` : ''}
+
+          <div class="contact-section">
+            <h3>Get in Touch</h3>
+            <p>Contact the property to make your booking or inquire about availability.</p>
+            <div class="contact-buttons">
+              ${gh.whatsapp ? `
+                <button onclick="triggerWhatsApp('${gh.name}', '${gh.whatsapp.replace(/\D/g, '')}')" class="contact-btn contact-btn-whatsapp">
+                  WhatsApp
+                </button>
+              ` : ''}
+              ${gh.phone ? `
+                <a href="tel:${gh.phone}" onclick="trackBookingClick(${gh.id}, 'phone')" class="contact-btn contact-btn-phone">
+                  Call
+                </a>
+              ` : ''}
+            </div>
+            <div class="attribution">Discovered via Accolink</div>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('detailOverlay').classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // LEAD CAPTURE FUNCTIONS
+    function triggerWhatsApp(houseName, phone) {
+      currentHouse = houseName;
+      currentOwnerPhone = phone;
+      document.getElementById('leadModal').style.display = 'flex';
+    }
+
+    function closeLeadModal() {
+      document.getElementById('leadModal').style.display = 'none';
+    }
+
+    async function submitLead() {
+      const name = document.getElementById('guestName').value;
+      const phone = document.getElementById('guestPhone').value;
+
+      if (!name || !phone) {
+        alert("Please provide your name and phone number.");
+        return;
+      }
+
+      // Save to Supabase
+      const { error } = await _supabase
+        .from('leads')
+        .insert([{ 
+          guest_name: name, 
+          guest_phone: phone, 
+          house_name: currentHouse 
+        }]);
+
+      if (!error) {
+        document.getElementById('leadModal').style.display = 'none';
+        
+        // YOUR ORIGINAL MESSAGE UNCHANGED
+        const message = "Hello i saw you guest house on Accolink i would like to book a room please";
+        
+        window.open(`https://wa.me/${currentOwnerPhone}?text=${encodeURIComponent(message)}`, '_blank');
+      } else {
+        console.error(error.message);
+        alert("Something went wrong. Please try again.");
+      }
+    }
+
+    function nextImage() {
+      if (!window.images) return;
+      window.currentImageIndex = (window.currentImageIndex + 1) % window.images.length;
+      updateCarousel();
+    }
+
+    function prevImage() {
+      if (!window.images) return;
+      window.currentImageIndex = (window.currentImageIndex - 1 + window.images.length) % window.images.length;
+      updateCarousel();
+    }
+
+    function goToImage(index) {
+      window.currentImageIndex = index;
+      updateCarousel();
+    }
+
+    function updateCarousel() {
+      if (!window.images) return;
+      const mainImageEl = document.getElementById('mainImage');
+      if (mainImageEl) {
+        mainImageEl.src = window.images[window.currentImageIndex];
+      }
+      
+      document.querySelectorAll('.thumbnail').forEach((thumb, idx) => {
+        thumb.classList.toggle('active', idx === window.currentImageIndex);
+      });
+    }
+
+    function showHome() {
+      document.getElementById('detailOverlay').classList.remove('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    async function trackBookingClick(guesthouseId, clickType) {
+      try {
+        await fetch(`${SUPABASE_URL}/rest/v1/booking_analytics`, {
+          method: 'POST',
+          headers: {
+            'apikey': SUPABASE_KEY,
+            'Authorization': `Bearer ${SUPABASE_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            guesthouse_id: guesthouseId,
+            click_type: clickType,
+            source: 'accolink',
+            client_ip: 'tracked'
+          }),
+        });
+
+        gtag('event', 'booking_click', {
+          'guesthouse_id': guesthouseId,
+          'click_type': clickType,
+          'source': 'accolink'
+        });
+      } catch (error) {
+        console.error('Tracking error:', error);
+      }
+    }
+
+    init();
+  </script>
 </body>
 </html>
