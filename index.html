@@ -750,7 +750,39 @@
   <script>
     const SUPABASE_URL = 'https://bqaebgtvwxpdaqwdytss.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJxYWViZ3R2d3hwZGFxd2R5dHNzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1MjIzNTIsImV4cCI6MjA4NjA5ODM1Mn0.gvhaJqDncopmuSzw3fs91rS87G2--bDtvZeWEEg8mno';
-    
+    let guesthouseName = "";
+let guesthouseNumber = "";
+
+function openCallForm(name, number){
+  guesthouseName = name;
+  guesthouseNumber = number;
+  document.getElementById("callModal").style.display = "block";
+}
+
+async function submitCall(){
+
+  const firstName = document.getElementById("firstName").value;
+  const lastName = document.getElementById("lastName").value;
+  const phone = document.getElementById("phoneNumber").value;
+
+  const { data, error } = await supabase
+    .from("leads")
+    .insert([
+      {
+        first_name: firstName,
+        last_name: lastName,
+        phone_number: phone,
+        guesthouse: guesthouseName,
+        method: "call"
+      }
+    ]);
+
+  if(!error){
+    window.location.href = "tel:" + guesthouseNumber;
+  }else{
+    alert("Error saving data");
+  }
+}
     // Initialize Supabase Client
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
