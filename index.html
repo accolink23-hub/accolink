@@ -5,17 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Accolink - Find nearby stays in Botswana</title>
   <link rel="icon" type="image/png" href="https://bqaebgtvwxpdaqwdytss.supabase.co/storage/v1/object/public/company%20logo/accolink%20logo.png">
-
-<link rel="apple-touch-icon" href="https://bqaebgtvwxpdaqwdytss.supabase.co/storage/v1/object/public/company%20logo/accolink%20logo.png">
-
-<link rel="icon" type="image/png" sizes="32x32" href="https://bqaebgtvwxpdaqwdytss.supabase.co/storage/v1/object/public/company%20logo/accolink%20logo.png">
+  <link rel="apple-touch-icon" href="https://bqaebgtvwxpdaqwdytss.supabase.co/storage/v1/object/public/company%20logo/accolink%20logo.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://bqaebgtvwxpdaqwdytss.supabase.co/storage/v1/object/public/company%20logo/accolink%20logo.png">
   <link rel="manifest" href="manifest.json">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <link rel="apple-touch-icon" href="logo.png">
   <meta name="theme-color" content="#1a5a3a">
 
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-ZH2GH4D8JM"></script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZH2GH4D8JM"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
@@ -86,6 +83,46 @@
     }
 
     .btn-submit {
+      background: var(--primary);
+      color: white;
+      width: 100%;
+      padding: 14px;
+      border-radius: 6px;
+      font-weight: 700;
+      margin-top: 10px;
+    }
+
+    /* Call Modal Specific Styling */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    .modal-content h3 { color: var(--primary); margin-bottom: 15px; }
+    .modal-content input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+    }
+
+    .modal-content button {
       background: var(--primary);
       color: white;
       width: 100%;
@@ -694,17 +731,7 @@
   </style>
 </head>
 <body>
-<div id="callModal" class="modal" style="display:none;">
-  <div class="modal-content">
-    <h3>Call Guesthouse</h3>
 
-    <input id="firstName" type="text" placeholder="First Name" required>
-    <input id="lastName" type="text" placeholder="Last Name" required>
-    <input id="phoneNumber" type="tel" placeholder="Your Phone Number" required>
-
-    <button onclick="submitCall()">Continue to Call</button>
-  </div>
-</div>
   <div id="leadModal">
     <div class="modal-box">
       <h3>Contact Guest House</h3>
@@ -713,6 +740,17 @@
       <input type="tel" id="guestPhone" placeholder="Your Phone Number" required>
       <button class="btn-submit" onclick="submitLead()">Continue to Booking</button>
       <p style="font-size: 11px; color: #999; margin-top: 10px; cursor: pointer;" onclick="closeLeadModal()">Cancel</p>
+    </div>
+  </div>
+
+  <div id="callModal" class="modal">
+    <div class="modal-content">
+      <h3>Call Guesthouse</h3>
+      <input id="firstName" type="text" placeholder="First Name" required>
+      <input id="lastName" type="text" placeholder="Last Name" required>
+      <input id="phoneNumber" type="tel" placeholder="Your Phone Number" required>
+      <button onclick="submitCall()">Continue to Call</button>
+      <p style="font-size: 11px; color: #999; margin-top: 10px; cursor: pointer;" onclick="document.getElementById('callModal').style.display='none'">Cancel</p>
     </div>
   </div>
 
@@ -750,39 +788,7 @@
   <script>
     const SUPABASE_URL = 'https://bqaebgtvwxpdaqwdytss.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJxYWViZ3R2d3hwZGFxd2R5dHNzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1MjIzNTIsImV4cCI6MjA4NjA5ODM1Mn0.gvhaJqDncopmuSzw3fs91rS87G2--bDtvZeWEEg8mno';
-    let guesthouseName = "";
-let guesthouseNumber = "";
-
-function openCallForm(name, number){
-  guesthouseName = name;
-  guesthouseNumber = number;
-  document.getElementById("callModal").style.display = "block";
-}
-
-async function submitCall(){
-
-  const firstName = document.getElementById("firstName").value;
-  const lastName = document.getElementById("lastName").value;
-  const phone = document.getElementById("phoneNumber").value;
-
-  const { data, error } = await supabase
-    .from("leads")
-    .insert([
-      {
-        first_name: firstName,
-        last_name: lastName,
-        phone_number: phone,
-        guesthouse: guesthouseName,
-        method: "call"
-      }
-    ]);
-
-  if(!error){
-    window.location.href = "tel:" + guesthouseNumber;
-  }else{
-    alert("Error saving data");
-  }
-}
+    
     // Initialize Supabase Client
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -974,14 +980,14 @@ async function submitCall(){
             <p>Contact the property to make your booking or inquire about availability.</p>
             <div class="contact-buttons">
               ${gh.whatsapp ? `
-                <button onclick="triggerWhatsApp('${gh.name}', '${gh.whatsapp.replace(/\D/g, '')}')" class="contact-btn contact-btn-whatsapp">
+                <button onclick="triggerWhatsApp('${gh.name.replace(/'/g, "\\'")}', '${gh.whatsapp.replace(/\D/g, '')}')" class="contact-btn contact-btn-whatsapp">
                   WhatsApp
                 </button>
               ` : ''}
               ${gh.phone ? `
-                <a href="tel:${gh.phone}" onclick="trackBookingClick(${gh.id}, 'phone')" class="contact-btn contact-btn-phone">
+                <button onclick="openCallForm('${gh.name.replace(/'/g, "\\'")}', '${gh.phone}'); trackBookingClick(${gh.id}, 'phone')" class="contact-btn contact-btn-phone">
                   Call
-                </a>
+                </button>
               ` : ''}
             </div>
             <div class="attribution">Discovered via Accolink</div>
@@ -999,39 +1005,7 @@ async function submitCall(){
       currentOwnerPhone = phone;
       document.getElementById('leadModal').style.display = 'flex';
     }
-let guesthouseName = "";
-let guesthouseNumber = "";
 
-function openCallForm(name, number){
-  guesthouseName = name;
-  guesthouseNumber = number;
-  document.getElementById("callModal").style.display = "block";
-}
-
-async function submitCall(){
-
-  const firstName = document.getElementById("firstName").value;
-  const lastName = document.getElementById("lastName").value;
-  const phone = document.getElementById("phoneNumber").value;
-
-  const { data, error } = await supabase
-    .from("leads")
-    .insert([
-      {
-        first_name: firstName,
-        last_name: lastName,
-        phone_number: phone,
-        guesthouse: guesthouseName,
-        method: "call"
-      }
-    ]);
-
-  if(!error){
-    window.location.href = "tel:" + guesthouseNumber;
-  }else{
-    alert("Error saving data");
-  }
-}
     function closeLeadModal() {
       document.getElementById('leadModal').style.display = 'none';
     }
@@ -1127,6 +1101,44 @@ async function submitCall(){
         console.error('Tracking error:', error);
       }
     }
+
+    // --- ADDED CALL MODAL JAVASCRIPT ---
+    let guesthouseName = "";
+    let guesthouseNumber = "";
+
+    function openCallForm(name, number){
+      guesthouseName = name;
+      guesthouseNumber = number;
+      // Using flex to match the centering of your other modals
+      document.getElementById("callModal").style.display = "flex";
+    }
+
+    async function submitCall(){
+      const firstName = document.getElementById("firstName").value;
+      const lastName = document.getElementById("lastName").value;
+      const phone = document.getElementById("phoneNumber").value;
+
+      // Changed 'supabase' to '_supabase' to use your existing initialized client
+      const { data, error } = await _supabase
+        .from("call_leads")
+        .insert([
+          {
+            first_name: firstName,
+            last_name: lastName,
+            phone_number: phone,
+            guesthouse: guesthouseName,
+            method: "call"
+          }
+        ]);
+
+      if(!error){
+        document.getElementById("callModal").style.display = "none";
+        window.location.href = "tel:" + guesthouseNumber;
+      }else{
+        alert("Error saving data: " + error.message);
+      }
+    }
+    // -----------------------------------
 
     init();
   </script>
