@@ -728,6 +728,194 @@
         font-size: 14px;
       }
     }
+
+    /* =====================================================
+       NEW: Info Modal (Terms, Privacy, Contact)
+       Added below — no existing styles were changed
+       ===================================================== */
+    .info-modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.75);
+      z-index: 10000;
+      overflow-y: auto;
+      padding: 20px;
+    }
+
+    .info-modal-overlay.active {
+      display: block;
+    }
+
+    .info-modal-box {
+      background: var(--white);
+      margin: 30px auto;
+      border-radius: 12px;
+      max-width: 700px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      animation: slideUp 0.3s ease;
+      overflow: hidden;
+    }
+
+    .info-modal-header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: var(--white);
+      padding: 20px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .info-modal-header h2 {
+      font-size: 20px;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .info-modal-close {
+      background: none;
+      border: none;
+      color: var(--white);
+      font-size: 28px;
+      cursor: pointer;
+      line-height: 1;
+      opacity: 0.85;
+      transition: opacity 0.2s;
+      padding: 0;
+    }
+
+    .info-modal-close:hover {
+      opacity: 1;
+    }
+
+    .info-modal-body {
+      padding: 28px 28px 32px;
+      font-size: 15px;
+      color: var(--text);
+      line-height: 1.8;
+    }
+
+    .info-modal-body h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--primary);
+      margin: 20px 0 8px;
+    }
+
+    .info-modal-body h3:first-child {
+      margin-top: 0;
+    }
+
+    .info-modal-body ul {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 12px;
+    }
+
+    .info-modal-body ul li {
+      padding: 5px 0 5px 20px;
+      position: relative;
+      color: var(--text-light);
+    }
+
+    .info-modal-body ul li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .info-modal-body p {
+      margin-bottom: 12px;
+      color: var(--text-light);
+    }
+
+    .info-modal-body a {
+      color: var(--primary);
+      font-weight: 600;
+      text-decoration: underline;
+    }
+
+    .info-modal-body .info-notice {
+      background: var(--bg);
+      border-left: 4px solid var(--primary);
+      padding: 14px 18px;
+      border-radius: 0 8px 8px 0;
+      margin: 16px 0;
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .info-contact-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 15px;
+    }
+
+    .info-contact-row:last-child {
+      border-bottom: none;
+    }
+
+    .info-contact-label {
+      font-weight: 700;
+      color: var(--primary);
+      min-width: 60px;
+    }
+
+    .info-contact-value {
+      color: var(--text-light);
+    }
+
+    .info-contact-value a {
+      color: var(--primary);
+      font-weight: 600;
+      text-decoration: underline;
+    }
+
+    /* NEW: Footer links row */
+    .footer-links {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255,255,255,0.2);
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .footer-links button {
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.8);
+      font-size: 13px;
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 0;
+      font-family: inherit;
+      transition: color 0.2s;
+    }
+
+    .footer-links button:hover {
+      color: var(--white);
+    }
+
+    @media (max-width: 768px) {
+      .info-modal-body {
+        padding: 20px 16px 24px;
+      }
+
+      .info-modal-header h2 {
+        font-size: 17px;
+      }
+
+      .footer-links {
+        gap: 16px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -783,7 +971,129 @@
 
   <footer>
     <p>Copyright 2026 Accolink. All rights reserved. Premium accommodation booking platform .</p>
+    <!-- NEW: Footer links appended below — footer text above is unchanged -->
+    <div class="footer-links">
+      <button onclick="openInfoModal('terms')">Terms &amp; Conditions</button>
+      <button onclick="openInfoModal('privacy')">Privacy Policy</button>
+      <button onclick="openInfoModal('contact')">Contact Us</button>
+    </div>
   </footer>
+
+  <!-- =====================================================
+       NEW: Info Modals (Terms, Privacy, Contact)
+       Appended before closing body — no existing HTML changed
+       ===================================================== -->
+
+  <!-- Terms and Conditions Modal -->
+  <div id="infoModal-terms" class="info-modal-overlay">
+    <div class="info-modal-box">
+      <div class="info-modal-header">
+        <h2>Terms &amp; Conditions</h2>
+        <button class="info-modal-close" onclick="closeInfoModal('terms')" aria-label="Close">×</button>
+      </div>
+      <div class="info-modal-body">
+        <div class="info-notice">
+          By using Accolink, you agree to the terms outlined below. Please read them carefully.
+        </div>
+
+        <h3>What Accolink Is</h3>
+        <p>Accolink is a platform that connects clients with guesthouses. We act solely as a connector between guests and accommodation providers.</p>
+
+        <h3>What We Do Not Do</h3>
+        <ul>
+          <li>We do NOT own, manage, or operate any guesthouses listed.</li>
+          <li>We do NOT handle bookings or payments.</li>
+          <li>We do NOT collect or process any payments.</li>
+        </ul>
+
+        <h3>User Responsibilities</h3>
+        <p>By using this platform, you agree that:</p>
+        <ul>
+          <li>Accolink is NOT responsible for the condition of any guesthouse.</li>
+          <li>Accolink is NOT responsible for cleanliness, service quality, or treatment by guesthouses.</li>
+          <li>Any disputes, complaints, or issues must be resolved directly with the guesthouse.</li>
+        </ul>
+
+        <h3>Acknowledgement</h3>
+        <p>By using this platform, you acknowledge that Accolink acts only as a connector between clients and guesthouses. All arrangements made are between you and the guesthouse directly.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Privacy Policy Modal -->
+  <div id="infoModal-privacy" class="info-modal-overlay">
+    <div class="info-modal-box">
+      <div class="info-modal-header">
+        <h2>Privacy Policy</h2>
+        <button class="info-modal-close" onclick="closeInfoModal('privacy')" aria-label="Close">×</button>
+      </div>
+      <div class="info-modal-body">
+        <div class="info-notice">
+          Accolink respects your privacy. This policy explains what information we collect and how it is used.
+        </div>
+
+        <h3>Information We May Collect</h3>
+        <ul>
+          <li>Names</li>
+          <li>Phone numbers</li>
+        </ul>
+
+        <h3>How We Use Your Information</h3>
+        <p>This information is used only to:</p>
+        <ul>
+          <li>Connect clients with guesthouses</li>
+          <li>Improve our service</li>
+        </ul>
+
+        <h3>What We Do NOT Do</h3>
+        <ul>
+          <li>We do NOT sell user data.</li>
+          <li>We do NOT share user data with third parties.</li>
+        </ul>
+
+        <h3>Data Security</h3>
+        <p>Your information is kept secure and used only for the purpose of facilitating connections on the platform. We are committed to protecting the privacy of all users.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contact Us Modal -->
+  <div id="infoModal-contact" class="info-modal-overlay">
+    <div class="info-modal-box">
+      <div class="info-modal-header">
+        <h2>Contact Us</h2>
+        <button class="info-modal-close" onclick="closeInfoModal('contact')" aria-label="Close">×</button>
+      </div>
+      <div class="info-modal-body">
+        <div class="info-notice">
+          Have a question or want to list your property? Get in touch with us using the details below.
+        </div>
+
+        <h3>Get In Touch</h3>
+        <div class="info-contact-row">
+          <span class="info-contact-label">Email</span>
+          <span class="info-contact-value">
+            <a href="mailto:accolinkguesthouses@gmail.com">accolinkguesthouses@gmail.com</a>
+          </span>
+        </div>
+        <div class="info-contact-row">
+          <span class="info-contact-label">Call</span>
+          <span class="info-contact-value">
+            <a href="tel:76233718">76233718</a> (Call only)
+          </span>
+        </div>
+        <div class="info-contact-row">
+          <span class="info-contact-label">Call / WhatsApp</span>
+          <span class="info-contact-value">
+            <a href="tel:76224307">76224307</a>
+          </span>
+        </div>
+
+        <h3>Partnerships &amp; Listings</h3>
+        <p>Guesthouses interested in being listed on Accolink can contact us using the details above. We are open to partnerships and welcome new properties to our platform.</p>
+      </div>
+    </div>
+  </div>
 
   <script>
     const SUPABASE_URL = 'https://bqaebgtvwxpdaqwdytss.supabase.co';
@@ -1139,6 +1449,37 @@
       }
     }
     // -----------------------------------
+
+    // =====================================================
+    // NEW: Info Modal functions (Terms, Privacy, Contact)
+    // Added below — no existing JS was modified
+    // =====================================================
+    function openInfoModal(type) {
+      const overlay = document.getElementById('infoModal-' + type);
+      if (overlay) {
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    function closeInfoModal(type) {
+      const overlay = document.getElementById('infoModal-' + type);
+      if (overlay) {
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    }
+
+    // Close info modal when clicking outside the modal box
+    document.querySelectorAll('.info-modal-overlay').forEach(function(overlay) {
+      overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) {
+          overlay.classList.remove('active');
+          document.body.style.overflow = '';
+        }
+      });
+    });
+    // =====================================================
 
     init();
   </script>
