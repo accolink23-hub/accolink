@@ -10,7 +10,7 @@
   <link rel="manifest" href="manifest.json">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <link rel="apple-touch-icon" href="logo.png">
-  <meta name="theme-color" content="#1a5a3a">
+  <meta name="theme-color" content="#064e3b">
 
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZH2GH4D8JM"></script>
 <script>
@@ -30,14 +30,15 @@
       box-sizing: border-box;
     }
 
+    /* ── CHANGE 2: Updated color theme — dark emerald, white, black ── */
     :root {
-      --primary: #1a5a3a;
-      --primary-dark: #0f3d27;
-      --accent: #8b6f47;
-      --bg: #f5f3f0;
-      --text: #1a1a1a;
-      --text-light: #666;
-      --border: #ddd;
+      --primary: #064e3b;
+      --primary-dark: #022c22;
+      --accent: #111111;
+      --bg: #ffffff;
+      --text: #0a0a0a;
+      --text-light: #555555;
+      --border: #e0e0e0;
       --white: #ffffff;
       --success: #25d366;
     }
@@ -276,9 +277,14 @@
       gap: 6px;
     }
 
+    /* ── CHANGE 1: SVG location icon styles ── */
     .location-pin {
-      font-size: 14px;
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
       color: var(--accent);
+      display: inline-flex;
+      align-items: center;
     }
 
     .card-price {
@@ -320,7 +326,7 @@
     }
 
     .card-button:hover {
-      background: #a68562;
+      background: #333333;
       transform: translateY(-2px);
     }
 
@@ -339,14 +345,14 @@
       font-size: 16px;
       font-weight: 700;
       transition: all 0.3s;
-      box-shadow: 0 4px 12px rgba(26,90,58,0.2);
+      box-shadow: 0 4px 12px rgba(6,78,59,0.2);
       cursor: pointer;
     }
 
     .load-more-btn:hover:not(:disabled) {
       background: var(--primary-dark);
       transform: translateY(-3px);
-      box-shadow: 0 6px 16px rgba(26,90,58,0.3);
+      box-shadow: 0 6px 16px rgba(6,78,59,0.3);
     }
 
     .load-more-btn:disabled {
@@ -508,7 +514,7 @@
 
     .thumbnail.active {
       border-color: var(--primary);
-      box-shadow: 0 0 8px rgba(26,90,58,0.4);
+      box-shadow: 0 0 8px rgba(6,78,59,0.4);
     }
 
     .detail-title {
@@ -550,7 +556,7 @@
 
     .amenity-badge {
       padding: 12px;
-      background: var(--bg);
+      background: #f3f4f6;
       border: 1px solid var(--border);
       border-radius: 6px;
       color: var(--primary);
@@ -570,13 +576,13 @@
       padding: 16px;
       border: 1px solid var(--border);
       border-radius: 8px;
-      background: var(--bg);
+      background: #f9fafb;
       transition: all 0.3s;
     }
 
     .room-card:hover {
       border-color: var(--accent);
-      box-shadow: 0 4px 12px rgba(139,111,71,0.1);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
 
     .room-card h4 {
@@ -660,11 +666,11 @@
 
     .contact-btn-phone {
       background: var(--accent);
-      box-shadow: 0 4px 12px rgba(139,111,71,0.3);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     }
 
     .contact-btn-phone:hover {
-      background: #a68562;
+      background: #333333;
       transform: translateY(-2px);
     }
 
@@ -838,7 +844,7 @@
     }
 
     .info-modal-body .info-notice {
-      background: var(--bg);
+      background: #f3f4f6;
       border-left: 4px solid var(--primary);
       padding: 14px 18px;
       border-radius: 0 8px 8px 0;
@@ -1111,6 +1117,9 @@
     let currentHouse = "";
     let currentOwnerPhone = "";
 
+    /* ── CHANGE 1: Reusable SVG location pin ── */
+    const locationPinSVG = `<svg class="location-pin" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>`;
+
     async function init() {
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('sw.js');
@@ -1180,7 +1189,7 @@
             <div class="card-content">
               <h3 class="card-title">${gh.name || 'Guesthouse'}</h3>
               <p class="card-location">
-                <span class="location-pin">📍</span>
+                ${locationPinSVG}
                 ${gh.location || 'Location not specified'}
               </p>
               <p class="card-price">From P${price}/night</p>
@@ -1188,7 +1197,8 @@
                 ${amenityList}
                 ${moreAmenities}
               </div>
-              <button class="card-button" onclick="showDetail(${gh.id})">Explore Guesthouse</button>
+              <!-- CHANGE 3: "Explore Guesthouse" → "View Guesthouse" -->
+              <button class="card-button" onclick="showDetail(${gh.id})">View Guesthouse</button>
             </div>
           </div>
         `;
@@ -1260,7 +1270,7 @@
 
           <h2 class="detail-title">${gh.name || 'Guesthouse'}</h2>
           <p class="detail-location">
-            <span>📍</span>
+            ${locationPinSVG}
             ${gh.location || 'Location not specified'}
           </p>
           <p class="detail-description">${gh.description || 'No description available'}</p>
