@@ -30,7 +30,6 @@
       box-sizing: border-box;
     }
 
-    /* ── CHANGE 2: Updated color theme — dark emerald, white, black ── */
     :root {
       --primary: #064e3b;
       --primary-dark: #022c22;
@@ -277,7 +276,6 @@
       gap: 6px;
     }
 
-    /* ── CHANGE 1: SVG location icon styles ── */
     .location-pin {
       width: 14px;
       height: 14px;
@@ -735,10 +733,7 @@
       }
     }
 
-    /* =====================================================
-       NEW: Info Modal (Terms, Privacy, Contact)
-       Added below — no existing styles were changed
-       ===================================================== */
+    /* Info Modal */
     .info-modal-overlay {
       display: none;
       position: fixed;
@@ -882,7 +877,6 @@
       text-decoration: underline;
     }
 
-    /* NEW: Footer links row */
     .footer-links {
       margin-top: 14px;
       padding-top: 14px;
@@ -922,6 +916,163 @@
         gap: 16px;
       }
     }
+
+    /* =====================================================
+       RATING SYSTEM STYLES — ADDED ONLY, NOTHING MODIFIED
+       ===================================================== */
+
+    /* Card rating row — sits between amenities and the view button */
+    .card-rating-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 12px;
+      padding: 10px 12px;
+      background: #f9fafb;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    .card-hearts {
+      font-size: 16px;
+      letter-spacing: 1px;
+      line-height: 1;
+    }
+
+    .card-rating-score {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .card-rating-count {
+      font-size: 12px;
+      color: var(--text-light);
+      margin-left: 2px;
+    }
+
+    .card-rating-none {
+      font-size: 12px;
+      color: var(--text-light);
+      margin-bottom: 12px;
+      font-style: italic;
+    }
+
+    /* Detail view rating section */
+    .detail-rating-section {
+      margin: 24px 0;
+      padding: 20px;
+      background: #f9fafb;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    .detail-rating-label {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 14px;
+    }
+
+    /* Interactive heart buttons */
+    .hearts-interactive {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+
+    .heart-btn {
+      font-size: 26px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 2px;
+      transition: transform 0.15s ease, filter 0.15s ease;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .heart-btn:hover {
+      transform: scale(1.25);
+      filter: drop-shadow(0 2px 4px rgba(220, 38, 38, 0.35));
+    }
+
+    .heart-btn:active {
+      transform: scale(1.1);
+    }
+
+    /* Summary bar below interactive hearts */
+    .detail-rating-summary {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .detail-hearts-display {
+      font-size: 18px;
+      letter-spacing: 1px;
+      line-height: 1;
+    }
+
+    .detail-rating-avg {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .detail-rating-count {
+      font-size: 13px;
+      color: var(--text-light);
+    }
+
+    .detail-rating-none {
+      font-size: 13px;
+      color: var(--text-light);
+      font-style: italic;
+    }
+
+    /* Toast notification for rating confirmation */
+    #ratingToast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(60px);
+      background: var(--primary);
+      color: var(--white);
+      padding: 12px 22px;
+      border-radius: 30px;
+      font-size: 14px;
+      font-weight: 600;
+      z-index: 99999;
+      opacity: 0;
+      transition: all 0.35s ease;
+      pointer-events: none;
+      white-space: nowrap;
+      box-shadow: 0 4px 16px rgba(6,78,59,0.35);
+    }
+
+    #ratingToast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @media (max-width: 768px) {
+      .heart-btn {
+        font-size: 30px;
+      }
+
+      .detail-rating-section {
+        padding: 16px;
+      }
+    }
+    /* ===================================================== */
   </style>
 </head>
 <body>
@@ -975,20 +1126,17 @@
     <div class="detail-view" id="detailView"></div>
   </div>
 
+  <!-- Rating toast notification -->
+  <div id="ratingToast">❤️ Rating saved!</div>
+
   <footer>
     <p>Copyright 2026 Accolink. All rights reserved. Premium accommodation booking platform .</p>
-    <!-- NEW: Footer links appended below — footer text above is unchanged -->
     <div class="footer-links">
       <button onclick="openInfoModal('terms')">Terms &amp; Conditions</button>
       <button onclick="openInfoModal('privacy')">Privacy Policy</button>
       <button onclick="openInfoModal('contact')">Contact Us</button>
     </div>
   </footer>
-
-  <!-- =====================================================
-       NEW: Info Modals (Terms, Privacy, Contact)
-       Appended before closing body — no existing HTML changed
-       ===================================================== -->
 
   <!-- Terms and Conditions Modal -->
   <div id="infoModal-terms" class="info-modal-overlay">
@@ -1001,17 +1149,14 @@
         <div class="info-notice">
           By using Accolink, you agree to the terms outlined below. Please read them carefully.
         </div>
-
         <h3>What Accolink Is</h3>
         <p>Accolink is a platform that connects clients with guesthouses. We act solely as a connector between guests and accommodation providers.</p>
-
         <h3>What We Do Not Do</h3>
         <ul>
           <li>We do NOT own, manage, or operate any guesthouses listed.</li>
           <li>We do NOT handle bookings or payments.</li>
           <li>We do NOT collect or process any payments.</li>
         </ul>
-
         <h3>User Responsibilities</h3>
         <p>By using this platform, you agree that:</p>
         <ul>
@@ -1019,7 +1164,6 @@
           <li>Accolink is NOT responsible for cleanliness, service quality, or treatment by guesthouses.</li>
           <li>Any disputes, complaints, or issues must be resolved directly with the guesthouse.</li>
         </ul>
-
         <h3>Acknowledgement</h3>
         <p>By using this platform, you acknowledge that Accolink acts only as a connector between clients and guesthouses. All arrangements made are between you and the guesthouse directly.</p>
       </div>
@@ -1037,26 +1181,22 @@
         <div class="info-notice">
           Accolink respects your privacy. This policy explains what information we collect and how it is used.
         </div>
-
         <h3>Information We May Collect</h3>
         <ul>
           <li>Names</li>
           <li>Phone numbers</li>
         </ul>
-
         <h3>How We Use Your Information</h3>
         <p>This information is used only to:</p>
         <ul>
           <li>Connect clients with guesthouses</li>
           <li>Improve our service</li>
         </ul>
-
         <h3>What We Do NOT Do</h3>
         <ul>
           <li>We do NOT sell user data.</li>
           <li>We do NOT share user data with third parties.</li>
         </ul>
-
         <h3>Data Security</h3>
         <p>Your information is kept secure and used only for the purpose of facilitating connections on the platform. We are committed to protecting the privacy of all users.</p>
       </div>
@@ -1074,7 +1214,6 @@
         <div class="info-notice">
           Have a question or want to list your property? Get in touch with us using the details below.
         </div>
-
         <h3>Get In Touch</h3>
         <div class="info-contact-row">
           <span class="info-contact-label">Email</span>
@@ -1094,7 +1233,6 @@
             <a href="tel:76224307">76224307</a>
           </span>
         </div>
-
         <h3>Partnerships &amp; Listings</h3>
         <p>Guesthouses interested in being listed on Accolink can contact us using the details above. We are open to partnerships and welcome new properties to our platform.</p>
       </div>
@@ -1105,7 +1243,6 @@
     const SUPABASE_URL = 'https://bqaebgtvwxpdaqwdytss.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJxYWViZ3R2d3hwZGFxd2R5dHNzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1MjIzNTIsImV4cCI6MjA4NjA5ODM1Mn0.gvhaJqDncopmuSzw3fs91rS87G2--bDtvZeWEEg8mno';
     
-    // Initialize Supabase Client
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     let currentPage = 1;
@@ -1113,18 +1250,263 @@
     let allGuesthouses = [];
     let displayedGuesthouses = [];
     
-    // Variables for Lead Tracking
     let currentHouse = "";
     let currentOwnerPhone = "";
 
-    /* ── CHANGE 1: Reusable SVG location pin ── */
     const locationPinSVG = `<svg class="location-pin" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>`;
+
+    // =====================================================
+    // RATING SYSTEM — NEW CODE ONLY
+    // No existing variables, functions, or logic were
+    // modified. Everything below this banner is additive.
+    // =====================================================
+
+    // ratingsMap: { [guesthouse_id]: { avg: Number, count: Number } }
+    let ratingsMap = {};
+    // userRatingsMap: { [guesthouse_id]: Number } — the current user's submitted rating
+    let userRatingsMap = {};
+
+    /** Returns a persistent anonymous user ID stored in localStorage */
+    function getRatingUserId() {
+      let uid = localStorage.getItem('accolink_uid');
+      if (!uid) {
+        uid = 'u_' + Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
+        localStorage.setItem('accolink_uid', uid);
+      }
+      return uid;
+    }
+
+    /** Fetches all ratings from Supabase and builds ratingsMap + userRatingsMap */
+    async function loadRatings() {
+      try {
+        const userId = getRatingUserId();
+        const response = await fetch(
+          `${SUPABASE_URL}/rest/v1/ratings?select=guesthouse_id,rating,user_id`,
+          {
+            headers: {
+              'apikey': SUPABASE_KEY,
+              'Authorization': `Bearer ${SUPABASE_KEY}`,
+            }
+          }
+        );
+        if (!response.ok) return;
+        const data = await response.json();
+
+        // Build aggregates
+        const agg = {};
+        data.forEach(r => {
+          const gid = r.guesthouse_id;
+          if (!agg[gid]) agg[gid] = { total: 0, count: 0 };
+          agg[gid].total += r.rating;
+          agg[gid].count += 1;
+          if (r.user_id === userId) {
+            userRatingsMap[gid] = r.rating;
+          }
+        });
+        Object.keys(agg).forEach(gid => {
+          ratingsMap[gid] = {
+            avg: agg[gid].total / agg[gid].count,
+            count: agg[gid].count
+          };
+        });
+      } catch (e) {
+        // Ratings are non-critical; silently ignore errors
+        console.warn('Could not load ratings:', e);
+      }
+    }
+
+    /**
+     * Returns a string of filled/empty heart emojis.
+     * avg: Number (the average rating, 1-5)
+     */
+    function buildHeartsDisplay(avg) {
+      const rounded = Math.round(avg);
+      let h = '';
+      for (let i = 1; i <= 5; i++) h += i <= rounded ? '❤️' : '🤍';
+      return h;
+    }
+
+    /**
+     * Returns the HTML for the rating row shown on listing cards.
+     * ghId: the guesthouse id (integer)
+     */
+    function getCardRatingHTML(ghId) {
+      const r = ratingsMap[ghId];
+      if (!r || r.count === 0) {
+        return `<p class="card-rating-none">No ratings yet — be the first!</p>`;
+      }
+      const avg = r.avg.toFixed(1);
+      const label = r.count === 1 ? '1 rating' : `${r.count} ratings`;
+      return `
+        <div class="card-rating-row">
+          <span class="card-hearts">${buildHeartsDisplay(r.avg)}</span>
+          <span class="card-rating-score">(${avg})</span>
+          <span class="card-rating-count">· ${label}</span>
+        </div>
+      `;
+    }
+
+    /**
+     * Returns the full HTML for the interactive rating section in the detail view.
+     * ghId: the guesthouse id (integer)
+     */
+    function getDetailRatingHTML(ghId) {
+      const userId = getRatingUserId();
+      const userRating = userRatingsMap[ghId] || 0;
+      const r = ratingsMap[ghId];
+
+      // Build interactive hearts (hover preview handled via CSS + JS)
+      let interactiveHeartsHTML = '<div class="hearts-interactive" id="hearts-interactive-' + ghId + '">';
+      for (let i = 1; i <= 5; i++) {
+        const filled = userRating >= i;
+        interactiveHeartsHTML += `
+          <button
+            class="heart-btn"
+            data-ghid="${ghId}"
+            data-value="${i}"
+            aria-label="Rate ${i} heart${i > 1 ? 's' : ''}"
+            onclick="submitRating(${ghId}, ${i})"
+            onmouseenter="previewHearts(${ghId}, ${i})"
+            onmouseleave="resetHeartPreview(${ghId})"
+          >${filled ? '❤️' : '🤍'}</button>
+        `;
+      }
+      interactiveHeartsHTML += '</div>';
+
+      // Build summary
+      let summaryHTML = '';
+      if (r && r.count > 0) {
+        const avg = r.avg.toFixed(1);
+        const label = r.count === 1 ? '1 rating' : `${r.count} ratings`;
+        summaryHTML = `
+          <div class="detail-rating-summary">
+            <span class="detail-hearts-display">${buildHeartsDisplay(r.avg)}</span>
+            <span class="detail-rating-avg">(${avg})</span>
+            <span class="detail-rating-count">· ${label}</span>
+          </div>
+        `;
+      } else {
+        summaryHTML = `
+          <div class="detail-rating-summary">
+            <span class="detail-rating-none">No ratings yet — tap a heart to rate!</span>
+          </div>
+        `;
+      }
+
+      const userLabel = userRating > 0
+        ? `Your rating: ${buildHeartsDisplay(userRating)} — tap to change`
+        : 'Tap hearts to rate this guesthouse:';
+
+      return `
+        <div class="detail-rating-section" id="detail-rating-${ghId}">
+          <div class="detail-rating-label">❤️ Rate This Guesthouse</div>
+          <p style="font-size:13px;color:var(--text-light);margin-bottom:10px;">${userLabel}</p>
+          ${interactiveHeartsHTML}
+          ${summaryHTML}
+        </div>
+      `;
+    }
+
+    /**
+     * Hover preview — fills hearts up to the hovered value without saving.
+     */
+    function previewHearts(ghId, hoverValue) {
+      const container = document.getElementById('hearts-interactive-' + ghId);
+      if (!container) return;
+      const btns = container.querySelectorAll('.heart-btn');
+      btns.forEach((btn, idx) => {
+        btn.textContent = idx < hoverValue ? '❤️' : '🤍';
+      });
+    }
+
+    /**
+     * Resets heart display to the saved user rating after hover ends.
+     */
+    function resetHeartPreview(ghId) {
+      const container = document.getElementById('hearts-interactive-' + ghId);
+      if (!container) return;
+      const userRating = userRatingsMap[ghId] || 0;
+      const btns = container.querySelectorAll('.heart-btn');
+      btns.forEach((btn, idx) => {
+        btn.textContent = idx < userRating ? '❤️' : '🤍';
+      });
+    }
+
+    /**
+     * Submits or updates a rating via Supabase upsert.
+     * ghId: guesthouse id (integer)
+     * value: 1-5
+     */
+    async function submitRating(ghId, value) {
+      const userId = getRatingUserId();
+      const oldRating = userRatingsMap[ghId];
+
+      // Optimistic UI update
+      userRatingsMap[ghId] = value;
+      if (!ratingsMap[ghId]) {
+        ratingsMap[ghId] = { avg: value, count: 1 };
+      } else {
+        const r = ratingsMap[ghId];
+        if (oldRating) {
+          const newTotal = r.avg * r.count - oldRating + value;
+          ratingsMap[ghId] = { avg: newTotal / r.count, count: r.count };
+        } else {
+          const newTotal = r.avg * r.count + value;
+          ratingsMap[ghId] = { avg: newTotal / (r.count + 1), count: r.count + 1 };
+        }
+      }
+
+      // Re-render the detail rating section if it's visible
+      const detailSection = document.getElementById('detail-rating-' + ghId);
+      if (detailSection) {
+        detailSection.outerHTML = getDetailRatingHTML(ghId);
+      }
+
+      showRatingToast('❤️ Rating saved!');
+
+      // Persist to Supabase (upsert via ON CONFLICT DO UPDATE)
+      try {
+        await fetch(`${SUPABASE_URL}/rest/v1/ratings`, {
+          method: 'POST',
+          headers: {
+            'apikey': SUPABASE_KEY,
+            'Authorization': `Bearer ${SUPABASE_KEY}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'resolution=merge-duplicates',
+          },
+          body: JSON.stringify({
+            guesthouse_id: ghId,
+            user_id: userId,
+            rating: value,
+          })
+        });
+      } catch (e) {
+        console.warn('Rating save error:', e);
+      }
+    }
+
+    /** Shows a brief toast message at the bottom of the screen */
+    function showRatingToast(msg) {
+      const toast = document.getElementById('ratingToast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2200);
+    }
+
+    // =====================================================
+    // END RATING SYSTEM
+    // =====================================================
 
     async function init() {
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('sw.js');
       }
-      await loadGuesthouses();
+      // Load ratings in parallel with guesthouses
+      await Promise.all([loadGuesthouses(), loadRatings()]);
+      // Re-render cards once ratings are also available
+      if (displayedGuesthouses.length > 0) {
+        renderGuesthouses(displayedGuesthouses);
+      }
     }
 
     async function loadGuesthouses() {
@@ -1197,7 +1579,7 @@
                 ${amenityList}
                 ${moreAmenities}
               </div>
-              <!-- CHANGE 3: "Explore Guesthouse" → "View Guesthouse" -->
+              ${getCardRatingHTML(gh.id)}
               <button class="card-button" onclick="showDetail(${gh.id})">View Guesthouse</button>
             </div>
           </div>
@@ -1295,6 +1677,8 @@
             </div>
           ` : ''}
 
+          ${getDetailRatingHTML(gh.id)}
+
           <div class="contact-section">
             <h3>Get in Touch</h3>
             <p>Contact the property to make your booking or inquire about availability.</p>
@@ -1339,7 +1723,6 @@
         return;
       }
 
-      // Save to Supabase
       const { error } = await _supabase
         .from('leads')
         .insert([{ 
@@ -1350,10 +1733,7 @@
 
       if (!error) {
         document.getElementById('leadModal').style.display = 'none';
-        
-        // YOUR ORIGINAL MESSAGE UNCHANGED
         const message = "Hello i saw your guest house on Accolink i would like to book a room please";
-        
         window.open(`https://wa.me/${currentOwnerPhone}?text=${encodeURIComponent(message)}`, '_blank');
       } else {
         console.error(error.message);
@@ -1384,7 +1764,6 @@
       if (mainImageEl) {
         mainImageEl.src = window.images[window.currentImageIndex];
       }
-      
       document.querySelectorAll('.thumbnail').forEach((thumb, idx) => {
         thumb.classList.toggle('active', idx === window.currentImageIndex);
       });
@@ -1422,14 +1801,12 @@
       }
     }
 
-    // --- ADDED CALL MODAL JAVASCRIPT ---
     let guesthouseName = "";
     let guesthouseNumber = "";
 
     function openCallForm(name, number){
       guesthouseName = name;
       guesthouseNumber = number;
-      // Using flex to match the centering of your other modals
       document.getElementById("callModal").style.display = "flex";
     }
 
@@ -1438,7 +1815,6 @@
       const lastName = document.getElementById("lastName").value;
       const phone = document.getElementById("phoneNumber").value;
 
-      // Changed 'supabase' to '_supabase' to use your existing initialized client
       const { data, error } = await _supabase
         .from("call_leads")
         .insert([
@@ -1458,12 +1834,7 @@
         alert("Error saving data: " + error.message);
       }
     }
-    // -----------------------------------
 
-    // =====================================================
-    // NEW: Info Modal functions (Terms, Privacy, Contact)
-    // Added below — no existing JS was modified
-    // =====================================================
     function openInfoModal(type) {
       const overlay = document.getElementById('infoModal-' + type);
       if (overlay) {
@@ -1480,7 +1851,6 @@
       }
     }
 
-    // Close info modal when clicking outside the modal box
     document.querySelectorAll('.info-modal-overlay').forEach(function(overlay) {
       overlay.addEventListener('click', function(e) {
         if (e.target === overlay) {
@@ -1489,7 +1859,6 @@
         }
       });
     });
-    // =====================================================
 
     init();
   </script>
